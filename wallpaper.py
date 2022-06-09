@@ -1,6 +1,4 @@
 import os
-import pprint
-import sys
 import subprocess
 from time import strftime
 import requests
