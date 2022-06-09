@@ -26,6 +26,9 @@ END"""
 
 
 def set_desktop_background(destination, desc):
+    # this will fail if you switch from one source to another, as the finder will not update
+    # the image if it has the same file name.
+
     script0 = SCRIPT0.format(destination)
     subprocess.Popen(script0, shell=True)
 
@@ -35,8 +38,6 @@ def set_desktop_background(destination, desc):
 
 def parse_feed(rss):
     destination = "%s%s.jpg" % (dst_dir, strftime("%y-%m-%d"))
-    #if os.path.exists(destination):
-    #    sys.exit(0)
 
     try:
         rss_contents = requests.get(rss)
