@@ -8,17 +8,28 @@ the image.
 ## Usage
 Running is as simple as:
 
+
     python wallpaper.py
 
-Although of course you may in practice want to specify the path to the script.
+
+Although of course you may in practice want to specify the path to the script. To get
+the bing picture of the day instead of the NASA picture, simply type:
+
+
+    python wallpaper.py --mode bing
+
 
 ## Scheduling
 It can be scheduled using crontab as follows, at the command line:
 
+
     crontab -e
+
 
 then, enter the following data to run it at 9am each day:
 
+
     0 9 * * * ~/venv/bin/python ~/Documents/GitHub/daily-wallpaper/wallpaper.py
+
 
 This example uses a virtual environment. But you can specify whatever python you like as long as it uses python 3.9 or above. For more help with cron, check out https://crontab.guru/

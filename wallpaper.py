@@ -3,13 +3,14 @@ import subprocess
 from time import strftime
 import requests
 from xml.dom.minidom import parseString
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-mode', dest='mode', help='The mode to run in, nasa or bing. Nasa is the default', default='nasa')
 
 # Defines source and destination of image
 rss_feed_bing = 'https://www.bing.com/HPImageArchive.aspx?format=rss&idx=0&n=1&mkt=en-US'
 rss_feed_nasa = 'https://www.nasa.gov/rss/dyn/lg_image_of_the_day.rss'
-
-rss_feed = rss_feed_nasa
-is_bing = (rss_feed_bing is rss_feed)
 
 os.makedirs('~/Pictures/DeskFeed', exist_ok=True)
 dst_dir = os.path.expanduser('~/Pictures/DeskFeed/')
@@ -36,7 +37,12 @@ def set_desktop_background(destination, desc):
     subprocess.Popen(script1, shell=True)
 
 
-def parse_feed(rss):
+def parse_feed(args):
+    if args.mode == 'bing':
+        rss = rss_feed_bing
+    else:
+        rss = rss_feed_nasa
+
     destination = "%s%s.jpg" % (dst_dir, strftime("%y-%m-%d"))
 
     try:
@@ -48,16 +54,16 @@ def parse_feed(rss):
     rss_src = rss_contents.content
     dom = parseString(rss_src)
 
-    if is_bing:
+    if args.mode == 'bing':
         first_item = dom.getElementsByTagName('item')[0]
         link = "https://bing.com" + first_item.getElementsByTagName('link')[0].firstChild.data
         desc = first_item.getElementsByTagName('title')[0].firstChild.data
     else:
         first_item = dom.getElementsByTagName('item')[0]
         link = first_item.getElementsByTagName('enclosure')[0].getAttribute('url')
-        desc = first_item.getElementsByTagName('description')[0].firstChild.data
+        desc = first_item.getElementsByTagName('title')[0].firstChild.data + "\n" + first_item.getElementsByTagName('description')[0].firstChild.data
 
-    print(f"getting picture of the day: {link}\n{desc}")
+    print(f"Getting picture of the day: {link}\nTitle: {desc}")
 
     if os.path.isfile(destination):
         os.unlink(destination)
@@ -75,9 +81,10 @@ def parse_feed(rss):
     set_desktop_background(destination, desc)
 
 
-def main():
-    parse_feed(rss_feed)
+def main(args):
+    parse_feed(args)
 
 
 if __name__ == "__main__":
-    main()
+    args = parser.parse_args()
+    main(args)
